@@ -9,9 +9,20 @@ def main():
     
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     sock, add = server_socket.accept()
-    sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
+
+    req = sock.recv(1024).decode()
+
+    print(req)
+    method = req.split("\r\n")[0].split(" ")[1]
+
+    if method == "/":
+        sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
+    else:
+        sock.send(b'HTTP/1.1 404 Not Found\r\n\r\n')
+
+
     sock.close()
-    
+
 
 
 if __name__ == "__main__":
