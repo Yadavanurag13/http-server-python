@@ -15,10 +15,15 @@ def main():
     print(req)
     method = req.split("\r\n")[0].split(" ")[1]
 
-    if method == "/":
-        sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
-    else:
-        sock.send(b'HTTP/1.1 404 Not Found\r\n\r\n')
+    str = req.split("\r\n")[0].split(" ")[1].split("/")[2]
+    print(str)
+
+    sock.send(b'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 3\r\n\r\n{str}')
+
+    # if method == "/":
+    #     sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
+    # else:
+    #     sock.send(b'HTTP/1.1 404 Not Found\r\n\r\n')
 
 
     sock.close()
