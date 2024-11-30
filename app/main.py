@@ -11,7 +11,9 @@ def main():
 
     path = req.split("\r\n")[0].split(" ")[1]
 
-    
+    print(req)
+
+
     if path == "/":
         sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
     elif path.startswith("/echo/"):
@@ -19,7 +21,7 @@ def main():
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
         sock.send(response.encode())
     elif path.startswith("/user-agent"):
-        content = req.split(" ")[-1]
+        content = req.split(" ")[-1].split()[-1]
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
         sock.send(response.encode())
