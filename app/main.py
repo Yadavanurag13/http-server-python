@@ -18,7 +18,7 @@ def handle_connection(sock, addr):
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
         sock.send(response.encode())
     elif path.startswith("/files"):
-        directory = "tmp"
+        directory = sys.argv[2]
         filename = path[7:]
 
         print(directory)
