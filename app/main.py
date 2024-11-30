@@ -1,5 +1,6 @@
 import socket 
 import threading
+import sys
 
 def handle_connection(sock, addr):
     req = sock.recv(1024).decode()
@@ -16,6 +17,22 @@ def handle_connection(sock, addr):
         content = req.split(" ")[-1].split()[-1]
         response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
         sock.send(response.encode())
+    elif path.startswith("/files"):
+        directory = "tmp"
+        filename = path[7:]
+
+        print(directory)
+        print(filename)
+        try:
+            with open(f"/{directory}/{filename}", "r") as f:
+                body = f.read()
+
+                print(body)
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {len(body)}\r\n\r\n{body}"
+                sock.send(response.encode())
+        except:
+            response = f"HTTP/1.1 404 Not Found\r\n\r\n"
+            sock.send(response.encode())
     else:
         sock.send(b'HTTP/1.1 404 Not Found\r\n\r\n')
         
