@@ -3,14 +3,11 @@ import threading
 import sys
 
 def handle_connection(sock, addr):
-    
     req = sock.recv(1024).decode()
-
     path = req.split("\r\n")[0].split(" ")[1]
 
     encoding = req.split("\r\n")[-3].split(":")[0]
     encoding_type = req.split("\r\n")[-3].split(":")[1].strip()
-    print(encoding_type)
 
     print(req)
     print(path)
@@ -21,7 +18,8 @@ def handle_connection(sock, addr):
     elif path.startswith("/echo/"):
         if encoding == "Accept-Encoding":
             if encoding_type == "gzip":
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip"
+                content = path[6:]
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
             if encoding_type == "invalid-encoding":
@@ -36,7 +34,7 @@ def handle_connection(sock, addr):
 
         if encoding == "Accept-Encoding":
             if encoding_type == "gzip":
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip"
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
             if encoding_type == "invalid-encoding":
