@@ -8,19 +8,46 @@ def handle_connection(sock, addr):
 
     path = req.split("\r\n")[0].split(" ")[1]
 
+    encoding = req.split("\r\n")[-3].split(":")[0]
+    encoding_type = req.split("\r\n")[-3].split(":")[1].strip()
+    print(encoding_type)
+
     print(req)
     print(path)
 
     if path == "/":
         sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
+
     elif path.startswith("/echo/"):
-        content = path[6:]
-        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
-        sock.send(response.encode())
+
+        if encoding == "Accept-Encoding":
+            if encoding_type == "gzip":
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip"
+
+                sock.send(response.encode())
+            if encoding_type == "invalid-encoding":
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain"
+                sock.send(response.encode())
+        else:
+            content = path[6:]
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+            sock.send(response.encode())
+
     elif path.startswith("/user-agent"):
-        content = req.split(" ")[-1].split()[-1]
-        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
-        sock.send(response.encode())
+
+        if encoding == "Accept-Encoding":
+            if encoding_type == "gzip":
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip"
+
+                sock.send(response.encode())
+            if encoding_type == "invalid-encoding":
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain"
+                sock.send(response.encode())
+        else:
+            content = req.split(" ")[-1].split()[-1]
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+            sock.send(response.encode())
+
     elif path.startswith("/files"):
 
         method = req.split("\r\n")[0].split(" ")[0]
