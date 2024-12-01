@@ -23,7 +23,8 @@ def handle_connection(sock, addr):
 
                 sock.send(response.encode())
             if encoding_type == "invalid-encoding":
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain"
+                content = path[6:]
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
                 sock.send(response.encode())
         else:
             content = path[6:]
@@ -38,7 +39,10 @@ def handle_connection(sock, addr):
 
                 sock.send(response.encode())
             if encoding_type == "invalid-encoding":
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain"
+                content = path[6:]
+
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+                
                 sock.send(response.encode())
         else:
             content = req.split(" ")[-1].split()[-1]
