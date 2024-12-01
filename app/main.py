@@ -9,20 +9,26 @@ def handle_connection(sock, addr):
     encoding = req.split("\r\n")[-3].split(":")[0]
     encoding_type = req.split("\r\n")[-3].split(":")[1].strip()
 
+    str = req.split("\r\n")[-3].split(":")[1]
+
     print(req)
     print(path)
 
+    print(encoding)
+
+    print(type(list))
     if path == "/":
         sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
 
     elif path.startswith("/echo/"):
         if encoding == "Accept-Encoding":
-            if encoding_type == "gzip":
+
+            if "gzip" in str:
                 content = path[6:]
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
-            if encoding_type == "invalid-encoding":
+            if "invalid-encoding" in str:
                 content = path[6:]
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
                 sock.send(response.encode())
@@ -34,15 +40,15 @@ def handle_connection(sock, addr):
     elif path.startswith("/user-agent"):
 
         if encoding == "Accept-Encoding":
-            if encoding_type == "gzip":
+            if "gzip" in str:
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
-            if encoding_type == "invalid-encoding":
+            if "invalid-encoding" in str:
                 content = path[6:]
 
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
-                
+
                 sock.send(response.encode())
         else:
             content = req.split(" ")[-1].split()[-1]
