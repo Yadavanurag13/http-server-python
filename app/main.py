@@ -22,13 +22,12 @@ def handle_connection(sock, addr):
 
     elif path.startswith("/echo/"):
         if encoding == "Accept-Encoding":
-
             if "gzip" in str:
                 content = path[6:]
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
-            if "invalid-encoding" in str:
+            else:
                 content = path[6:]
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
                 sock.send(response.encode())
@@ -44,7 +43,7 @@ def handle_connection(sock, addr):
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
                 sock.send(response.encode())
-            if "invalid-encoding" in str:
+            else:
                 content = path[6:]
 
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
