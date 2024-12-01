@@ -19,7 +19,6 @@ def handle_connection(sock, addr):
         sock.send(b'HTTP/1.1 200 OK\r\n\r\n')
 
     elif path.startswith("/echo/"):
-
         if encoding == "Accept-Encoding":
             if encoding_type == "gzip":
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip"
