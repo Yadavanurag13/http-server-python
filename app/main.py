@@ -1,6 +1,7 @@
 import socket 
 import threading
 import sys
+import gzip
 
 def handle_connection(sock, addr):
     req = sock.recv(1024).decode()
@@ -24,9 +25,10 @@ def handle_connection(sock, addr):
         if encoding == "Accept-Encoding":
             if "gzip" in str:
                 content = path[6:]
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+                compressed_content = gzip.compress(content.encode())
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n"
 
-                sock.send(response.encode())
+                sock.send(response.encode() + compressed_content)
             else:
                 content = path[6:]
                 response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
@@ -37,12 +39,14 @@ def handle_connection(sock, addr):
             sock.send(response.encode())
 
     elif path.startswith("/user-agent"):
-
         if encoding == "Accept-Encoding":
-            if "gzip" in str:
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(content)}\r\n\r\n{content}"
 
-                sock.send(response.encode())
+            content = path[6:]
+            compressed_content = gzip.compress(content.encode())
+            if "gzip" in str:
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n"
+
+                sock.send(response.encode() + compressed_content)
             else:
                 content = path[6:]
 
