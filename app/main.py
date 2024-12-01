@@ -26,7 +26,7 @@ def handle_connection(sock, addr):
             if "gzip" in str:
                 content = path[6:]
                 compressed_content = gzip.compress(content.encode())
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n"
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n\r\n"
 
                 sock.send(response.encode() + compressed_content)
             else:
@@ -39,23 +39,25 @@ def handle_connection(sock, addr):
             sock.send(response.encode())
 
     elif path.startswith("/user-agent"):
-        if encoding == "Accept-Encoding":
 
-            content = path[6:]
-            compressed_content = gzip.compress(content.encode())
+        user_agent = None
+        for line in req.split("\r\n"):
+            if line.startswith("User-Agent:"):
+                user_agent = line.split("User-Agent:")[1].strip()
+                break
+
+        if encoding == "Accept-Encoding":
+            compressed_content = gzip.compress(user_agent.encode())
             if "gzip" in str:
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n"
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: {len(compressed_content)}\r\n\r\n"
 
                 sock.send(response.encode() + compressed_content)
             else:
-                content = path[6:]
-
-                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+                response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(user_agent)}\r\n\r\n{user_agent}"
 
                 sock.send(response.encode())
         else:
-            content = req.split(" ")[-1].split()[-1]
-            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(content)}\r\n\r\n{content}"
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {len(user_agent)}\r\n\r\n{user_agent}"
             sock.send(response.encode())
 
     elif path.startswith("/files"):
